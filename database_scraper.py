@@ -173,12 +173,12 @@ def write_to_file(table, tuple):
 
 def create_sql_query(os_obj, os):
     for adv in os_obj:
-        tuple_os = f"insert into {os} values ({adv.get('advID')}, {adv.get('title')}, {adv.get('severity')}, {adv.get('published')})"
+        tuple_os = f"insert into {os} values (\"{adv.get('advID')}\", \"{adv.get('title')}\", \"{adv.get('severity')}\", \'{adv.get('published')}\')"
         print(tuple_os)
         write_to_file(f"{os}_table", tuple_os)
         for product in adv.get("affected_products"):
             tuple_product = (
-                f"insert into Products values ({adv.get('advID')}, {product})"
+                f"insert into Products values (\"{adv.get('advID')}\" , \"{product}\")"
             )
             write_to_file("Products", tuple_product)
             print(tuple_product)
@@ -186,8 +186,8 @@ def create_sql_query(os_obj, os):
             cve_dict = get_cve_dict(cve, os)
             if cve_dict == "null":
                 continue
-            tuple_cve_table = f"insert into CVE values ({cve_dict.get('cveID')}, {cve_dict.get('severity')}, {cve_dict.get('rating')}, {cve_dict.get('published')}, {cve_dict.get('summary')}, {cve_dict.get('os')})"
-            tuple_cve = f"insert into Advisory_CVEs values ({adv.get('advID')}, {cve})"
+            tuple_cve_table = f"insert into CVE values (\"{cve_dict.get('cveID')}\", {cve_dict.get('severity')}, \"{cve_dict.get('rating')}\", \'{cve_dict.get('published')}\', \"{cve_dict.get('summary')}\", \'{cve_dict.get('os')}\')"
+            tuple_cve = f"insert into Advisory_CVEs values (\'{adv.get('advID')}\', \'{cve}\')"
             print(tuple_cve_table)
             print(tuple_cve)
             write_to_file("cve_table", tuple_cve_table)
@@ -215,8 +215,8 @@ while 1:
         after_date = input("After date: MMDDYYYY:\n")
 
 
-create_sql_query(get_all_redhat_adv_dict(before_date, after_date), "RedHat")
-create_sql_query(get_all_suse_dict(before_date, after_date), "SUSE")
+# create_sql_query(get_all_redhat_adv_dict(before_date, after_date), "RedHat")
+# create_sql_query(get_all_suse_dict(before_date, after_date), "SUSE")
 
 
 def get_words_list():
@@ -285,6 +285,9 @@ def create_inventory():
     with open(".\\sqlfiles\\Inventory.txt", "a") as file:
         for count in range(0, random.randint(15, 30)):
             product = create_products()
-            tuple = f"insert into Inventory values ({create_mac()}, {create_fqdn()}, {create_os(product)}, {create_computer_type(product)}, {product})\n"
+            tuple = f"insert into Inventory values (\'{create_mac()}\', \'{create_fqdn()}\', \'{create_os(product)}\', \'{create_computer_type(product)}\', \'{product}\')\n"
             file.write(tuple)
             print(tuple)
+
+create_inventory()
+
