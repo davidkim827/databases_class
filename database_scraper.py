@@ -1,8 +1,5 @@
-import sys
-import hashlib
 import random
 import json
-from pprint import pprint
 from datetime import datetime
 
 import requests
@@ -53,7 +50,7 @@ def get_cve_dict(cve, os):
         "cveID": cve,
         "severity": cvss,
         "rating": get_rating(cvss),
-        "published": cve_dict.get("Published")[:10],
+        "published": published,
         "summary": cve_dict.get("summary"),
         "os": os,
     }
@@ -218,9 +215,8 @@ while 1:
         after_date = input("After date: MMDDYYYY:\n")
 
 
-create_sql_query(get_all_redhat_adv_dict(before_date, after_date),"RedHat")
+create_sql_query(get_all_redhat_adv_dict(before_date, after_date), "RedHat")
 create_sql_query(get_all_suse_dict(before_date, after_date), "SUSE")
-
 
 
 def get_words_list():
@@ -236,7 +232,7 @@ def get_words_list():
         word_site = "http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"
         response = requests.get(word_site)
         WORDS = response.content.splitlines()
-        with open('words.txt', 'w') as file:
+        with open("words.txt", "w") as file:
             for word in WORDS:
                 file.write(f"{word.decode('utf-8')}\n")
         with open("words.txt", "r") as file:
@@ -286,7 +282,7 @@ def create_inventory():
         else:
             return "SUSE"
 
-    with open(".\\sqlfiles\\Inventory.txt", 'a') as file:
+    with open(".\\sqlfiles\\Inventory.txt", "a") as file:
         for count in range(0, random.randint(15, 30)):
             product = create_products()
             tuple = f"insert into Inventory values ({create_mac()}, {create_fqdn()}, {create_os(product)}, {create_computer_type(product)}, {product})\n"
